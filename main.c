@@ -7,12 +7,13 @@
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include <avr/wdt.h>
 #include <util/delay.h>
 #include <stdlib.h>
 #include "piny.h"
 #include "LCD/lcd44780.h"
 
-#define POS1 90
+#define POS1 80
 #define POS2 115
 #define POS3 130
 #define ZMIANA_POS 1500
@@ -41,54 +42,67 @@ int main(void)
 	lcd_init();
 	sei();
 	lcd_str("Wersja 4.0");
-
-	laduj();
+	
+	if (!BR00_STAN) 
+		laduj();
 	
 	while(1)
 	{
 		 
 		if (BR00_STAN && SPUST_STAN)
-		{
-
+		{	
+			wdt_enable(WDTO_15MS); // watchdog na 15ms
+			
 			CW01_ON;
 			while(!BR01_STAN);
 			CW01_OFF;
 			CW02_ON;
+			wdt_reset();
 			
 			while(!BR02_STAN);
 			CW02_OFF;
 			CW03_ON;
+			wdt_reset();
 			
 			while(!BR03_STAN);
 			CW03_OFF;
 			CW04_ON;
+			wdt_reset();
 			
 			while(!BR04_STAN);
 			CW04_OFF;
 			CW05_ON;
+			wdt_reset();
 			
 			while(!BR05_STAN);
 			CW05_OFF;
 			CW06_ON;
+			wdt_reset();
 			
 			while(!BR06_STAN);
 			CW06_OFF;
 			CW07_ON;
+			wdt_reset();
 			
 			while(!BR07_STAN);
 			CW07_OFF;
 			CW08_ON;
+			wdt_reset();
 			
 			while(!BR08_STAN);
 			CW08_OFF;
 			CW09_ON;
+			wdt_reset();
 			
 			while(!BR09_STAN);
 			CW09_OFF;
 			CW10_ON;
+			wdt_reset();
 			
 			while(!BR10_STAN);
 			CW10_OFF;
+			wdt_disable();
+			
 			timer0_start();
 			while(!BR11_STAN);
 			timer0_stop();
@@ -169,9 +183,11 @@ void laduj()
 	serwo_pos(POS1);
 	_delay_ms(ZMIANA_POS);
 	serwo_pos(POS2);
+	_delay_ms(ZMIANA_POS);
 	if(!BR00_STAN)
 	{
-		_delay_ms(ZMIANA_POS);
 		serwo_pos(POS3);
+		_delay_ms(ZMIANA_POS);
 	}
+	serwo_stop();
 }
