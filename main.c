@@ -54,8 +54,8 @@ int main(void)
 	czekaj(1000);
 	sei();
 	
-	lcd_str(" Wersja 4.2");
-	rsSendStr("Wersja 4.2\n\r");
+	lcd_str(" Wersja 4.3");
+	rsSendStr("Wersja 4.3\n\r");
 	
 	if (!BR00_STAN) 
 		laduj();
@@ -68,7 +68,7 @@ int main(void)
 		//	for(int i = 0; i<10;i++)
 		//		tab_predkosci[i] = 9375;
 				
-			wdt_enable(WDTO_15MS); // watchdog na 15ms
+			//wdt_enable(WDTO_15MS); // watchdog na 15ms
 			
 			CW01_ON;
 			timer0_start();
@@ -77,40 +77,40 @@ int main(void)
 			CW02_ON;
 			wdt_reset();
 			
-			timer0_stop();
-				miedzyczasy[0] = TCNT0;
-				miedzyczasy_ovf[0] = timer0_ovf;
-			timer0_start();
+
+			miedzyczasy[0] = TCNT0;
+			miedzyczasy_ovf[0] = timer0_ovf;
+
 			
 			while(!BR02_STAN);
 			CW02_OFF;
 			CW03_ON;
 			wdt_reset();
 						
-			timer0_stop();
-				miedzyczasy[1] = TCNT0;
-				miedzyczasy_ovf[1] = timer0_ovf;
-			timer0_start();
+
+			miedzyczasy[1] = TCNT0;
+			miedzyczasy_ovf[1] = timer0_ovf;
+
 			
 			while(!BR03_STAN);
 			CW03_OFF;
 			CW04_ON;
 			wdt_reset();
 			
-			timer0_stop();
-				miedzyczasy[2] = TCNT0;
-				miedzyczasy_ovf[2] = timer0_ovf;
-			timer0_start();
+			
+			miedzyczasy[2] = TCNT0;
+			miedzyczasy_ovf[2] = timer0_ovf;
+
 						
 			while(!BR04_STAN);
 			CW04_OFF;
 			CW05_ON;
 			wdt_reset();
 			
-			timer0_stop();
-				miedzyczasy[3] = TCNT0;
-				miedzyczasy_ovf[3] = timer0_ovf;
-			timer0_start();
+
+			miedzyczasy[3] = TCNT0;
+			miedzyczasy_ovf[3] = timer0_ovf;
+
 			
 			
 			while(!BR05_STAN);
@@ -118,65 +118,64 @@ int main(void)
 			CW06_ON;
 			wdt_reset();
 			
-			timer0_stop();
-				miedzyczasy[4] = TCNT0;
-				miedzyczasy_ovf[4] = timer0_ovf;
-			timer0_start();
+			miedzyczasy[4] = TCNT0;
+			miedzyczasy_ovf[4] = timer0_ovf;
+			
 			
 			while(!BR06_STAN);
 			CW06_OFF;
 			CW07_ON;
 			wdt_reset();
 			
-			timer0_stop();
-				miedzyczasy[5] = TCNT0;
-				miedzyczasy_ovf[5] = timer0_ovf;
-			timer0_start();
+
+			miedzyczasy[5] = TCNT0;
+			miedzyczasy_ovf[5] = timer0_ovf;
+			
 						
 			while(!BR07_STAN);
 			CW07_OFF;
 			CW08_ON;
 			wdt_reset();
 			
-			timer0_stop();
-				miedzyczasy[6] = TCNT0;
-				miedzyczasy_ovf[6] = timer0_ovf;
-			timer0_start();
+			
+			miedzyczasy[6] = TCNT0;
+			miedzyczasy_ovf[6] = timer0_ovf;
+
 			
 			while(!BR08_STAN);
 			CW08_OFF;
 			CW09_ON;
 			wdt_reset();
 			
-			timer0_stop();
-				miedzyczasy[7] = TCNT0;
-				miedzyczasy_ovf[7] = timer0_ovf;
-			timer0_start();
+
+			miedzyczasy[7] = TCNT0;
+			miedzyczasy_ovf[7] = timer0_ovf;
+
 						
 			while(!BR09_STAN);
 			CW09_OFF;
 			CW10_ON;
 			wdt_reset();
 			
-			timer0_stop();
-				miedzyczasy[8] = TCNT0;
-				miedzyczasy_ovf[8] = timer0_ovf;
-			timer0_start();
+
+			miedzyczasy[8] = TCNT0;
+			miedzyczasy_ovf[8] = timer0_ovf;
+
 						
 			while(!BR10_STAN);
 			CW10_OFF;
 			wdt_disable();
-			
-			timer0_stop();
-				miedzyczasy[9] = TCNT0;
-				miedzyczasy_ovf[9] = timer0_ovf;
 
+			miedzyczasy[9] = TCNT0;
+			miedzyczasy_ovf[9] = timer0_ovf;
 			
-			timer0_start();
+
 			while(!BR11_STAN);
 			timer0_stop();
-				miedzyczasy[10] = TCNT0;
-				miedzyczasy_ovf[10] = timer0_ovf;
+			miedzyczasy[10] = TCNT0;
+			miedzyczasy_ovf[10] = timer0_ovf;
+			
+			
 			
 			/*
 						timer0_start();
@@ -184,8 +183,8 @@ int main(void)
 						timer0_stop();
 			*/
 			
-			predkosc = 1562.5;
-			predkosc /= ((255*timer0_ovf) + TCNT0);
+			predkosc = 0.1;
+			predkosc /= (((255*miedzyczasy_ovf[10]) + miedzyczasy[10])*0.000004)-(((255*miedzyczasy_ovf[9]) + miedzyczasy[9])*0.000004);
 			lcd_cls();
 			lcd_str(" Predkosc:");
 			dtostrf(predkosc*3.6,6,2,buffor);
@@ -198,17 +197,26 @@ int main(void)
 			lcd_str(buffor);
 			lcd_str("m/s");
 			
-				for(int i=1;i<10;i++)
+				for(int i=1;i<11;i++)
 				{
-					rsSendStr(dtostrf(937.5/((255*miedzyczasy_ovf[i]) + miedzyczasy[i]),13,5,buffor));
+					rsSendStr(dtostrf(((255*miedzyczasy_ovf[i]) + miedzyczasy[i])*0.000004,13,5,buffor));
 					rsSendStr(" | ");
+				}
+				
+			rsSendStr("\n\r");
+		/*	for(int i=1;i<10;i++)
+			{
+				rsSendStr(itoa(miedzyczasy[i], buffor,10));
+				rsSendStr(" | ");
+			}
+			rsSendStr("\n\r");
+			for(int i=1;i<10;i++)
+				{
+				rsSendStr(itoa(miedzyczasy_ovf[i], buffor,10));
+				rsSendStr(" | ");
 				}
 			rsSendStr("\n\r");
-			/*	for(int i=1;i<11;i++)
-				{
-					rsSendStr(itoa(miedzyczasy_ovf[i], buffor,10));
-					rsSendStr(" | ");
-				}
+			rsSendStr("\n\r");
 			*/
 			laduj();
 		}
@@ -221,7 +229,7 @@ void timer0_start()
 	TCNT0 = 0;
 	timer0_ovf = 0;
 	TIMSK |= (1<<TOIE0);
-	TCCR0 = (1<<CS02) | (1<<CS00);
+	TCCR0 = (1<<CS01) | (1<<CS00); //PRESKALER 64
 	
 }
 void timer0_stop()
